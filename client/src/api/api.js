@@ -26,3 +26,16 @@ export const sendContactMessage = (formData) =>
     method: 'POST',
     body: JSON.stringify(formData),
   });
+
+  // Add these to src/api/api.js alongside your existing fetchProjects and sendContactMessage
+
+export const createProject = (projectData) =>
+  request('/projects', {
+    method: 'POST',
+    body: JSON.stringify(projectData),
+  });
+
+export const deleteProject = (id) =>
+  request(`/projects/${id}`, {
+    method: 'DELETE',
+  });

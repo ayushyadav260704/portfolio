@@ -1,10 +1,9 @@
 import express from "express";
-import { getContactMessages, submitContactMessage } from "../controllers/contactControllers.js";
+import {  submitContactMessage } from "../controllers/contactControllers.js";
 
 const router = express.Router();
 
 router.route("/")
-   .post(submitContactMessage)
-   .get(getContactMessages);
+   .post(submitContactMessage);
 
 export default router;
