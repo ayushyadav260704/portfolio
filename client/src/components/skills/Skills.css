@@ -1,0 +1,115 @@
+.skills-section {
+  background-color: var(--bg-primary);
+  padding: 5rem 0;
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+/* Category Card */
+.skill-category-card {
+  background-color: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 2rem;
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.skill-category-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--accent);
+}
+
+/* Card Header */
+.category-header {
+  display: flex;
+  align-items: flex-start;
+  gap: 1rem;
+  margin-bottom: 1.75rem;
+}
+
+.category-icon-box {
+  background-color: rgba(56, 189, 248, 0.1);
+  border: 1px solid rgba(56, 189, 248, 0.2);
+  padding: 0.75rem;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.category-icon {
+  color: var(--accent);
+}
+
+.category-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.35rem;
+}
+
+.category-description {
+  font-size: 0.88rem;
+  color: var(--text-secondary);
+  line-height: 1.4;
+}
+
+/* Skills List & Pills */
+.skill-pills-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: auto;
+}
+
+.skill-pill {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background-color: var(--bg-secondary);
+  border: 1px solid rgba(51, 65, 85, 0.6);
+  padding: 0.65rem 0.85rem;
+  border-radius: 8px;
+  transition: border-color 0.2s ease, background-color 0.2s ease;
+}
+
+.skill-pill:hover {
+  border-color: rgba(56, 189, 248, 0.3);
+  background-color: #243046;
+}
+
+.check-icon {
+  color: var(--accent);
+  margin-right: 0.6rem;
+  flex-shrink: 0;
+}
+
+.skill-name {
+  font-size: 0.92rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  flex-grow: 1;
+}
+
+.skill-level {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  background-color: rgba(15, 23, 42, 0.6);
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+}
+
+@media (max-width: 640px) {
+  .skill-category-card {
+    padding: 1.5rem;
+  }
+}
