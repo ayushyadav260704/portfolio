@@ -1,5 +1,5 @@
 import { Download, ArrowRight, Mail } from 'lucide-react';
-import { FaGithub,FaLinkedinIn } from 'react-icons/fa';
+import { FaGithub, FaLinkedinIn } from 'react-icons/fa';
 import './Hero.css';
 
 export default function Hero() {
@@ -33,11 +33,12 @@ export default function Hero() {
             <ArrowRight size={18} />
           </a>
 
-          {/* Secondary CTA - Direct Resume Download */}
-          {/* Place your actual PDF in: client/public/resume.pdf */}
+          {/* Secondary CTA - Direct Resume Download / View */}
+          {/* Option A: Drop your resume in client/public/resume.pdf */}
           <a
-            href="https://drive.google.com/file/d/1-GRS6lCYyhwmV4q0UKlxkMO20-NRgD9a/view?usp=drive_link"
-            download="YourName_FullStack_Resume.pdf"
+            href="https://drive.google.com/file/d/18rRL8QD44edcQZSlgnt70UVYiNnqvW5j/view?usp=sharing"
+            target="_blank"
+            rel="noopener noreferrer"
             className="btn btn-secondary"
           >
             <Download size={18} />
