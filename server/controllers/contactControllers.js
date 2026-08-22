@@ -30,25 +30,21 @@
 // }
 
 
+import { Resend } from 'resend';
 import Contact from '../models/Contact.js';
-import nodemailer from 'nodemailer';
 
-// @desc    Submit a contact message & send email notification
-// @route   POST /api/contact
-// @access  Public
 export const submitContactMessage = async (req, res, next) => {
   try {
     const { name, email, subject, message } = req.body;
 
-    // 1. Validation check
     if (!name || !email || !message) {
       return res.status(400).json({
         success: false,
-        message: 'Name, email, and message are required.',
+        message: 'Name, email, and message are required fields.',
       });
     }
 
-    // 2. Save inquiry to MongoDB
+    // 1. Persist contact inquiry in MongoDB
     const newContact = await Contact.create({
       name,
       email,
@@ -56,56 +52,42 @@ export const submitContactMessage = async (req, res, next) => {
       message,
     });
 
-    // 3. Check environment variables
-    const user = process.env.EMAIL_USER;
-    const rawPass = process.env.EMAIL_PASS;
+    // 2. Initialize Resend
+    const resendApiKey = process.env.RESEND_API_KEY;
+    const recipientEmail = process.env.EMAIL_TO || 'ayushyadav260704@gmail.com';
 
-    if (!user || !rawPass) {
-      console.error('ERROR: EMAIL_USER or EMAIL_PASS environment variable is missing on Render.');
-      return res.status(500).json({
-        success: false,
-        message: 'Mail server configuration is missing.',
+    if (!resendApiKey) {
+      console.warn('RESEND_API_KEY is not defined. Message saved to database only.');
+      return res.status(201).json({
+        success: true,
+        message: 'Message received and recorded successfully!',
+        data: newContact,
       });
     }
 
-    // Sanitize 16-character Google App Password (remove spaces)
-    const pass = rawPass.replace(/\s+/g, '');
+    const resend = new Resend(resendApiKey);
 
-    // 4. Configure explicit SSL transporter on port 465
-    const transporter = nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // SSL
-      auth: {
-        user,
-        pass,
-      },
-    });
-
-    // 5. Configure Email Payload
-    const mailOptions = {
-      from: `"Portfolio Contact" <${user}>`,
-      to: process.env.EMAIL_TO || user,
-      replyTo: email,
+    // 3. Send email over HTTPS (bypasses Render SMTP port blocking)
+    await resend.emails.send({
+      from: 'Portfolio Contact <onboarding@resend.dev>',
+      to: recipientEmail,
+      reply_to: email,
       subject: `[Portfolio Inquiry] ${subject || 'New Message'} from ${name}`,
       html: `
         <div style="font-family: Arial, sans-serif; padding: 20px; color: #333; line-height: 1.6;">
-          <h2 style="color: #0284c7; border-bottom: 2px solid #e2e8f0; padding-bottom: 10px;">
+          <h2 style="color: #4f46e5; border-bottom: 2px solid #e0e7ff; padding-bottom: 8px;">
             New Inquiry Received via Portfolio
           </h2>
           <p><strong>Name:</strong> ${name}</p>
           <p><strong>Email:</strong> <a href="mailto:${email}">${email}</a></p>
           <p><strong>Subject:</strong> ${subject || 'N/A'}</p>
-          <div style="background: #f1f5f9; padding: 15px; border-radius: 8px; margin-top: 15px;">
+          <div style="background: #f8fafc; padding: 16px; border-radius: 8px; border-left: 4px solid #4f46e5; margin-top: 16px;">
             <strong>Message:</strong>
-            <p style="white-space: pre-wrap; margin-top: 8px;">${message}</p>
+            <p style="white-space: pre-wrap; margin-top: 8px; color: #1e293b;">${message}</p>
           </div>
         </div>
       `,
-    };
-
-    // 6. Send Mail
-    await transporter.sendMail(mailOptions);
+    });
 
     res.status(201).json({
       success: true,
@@ -113,7 +95,7 @@ export const submitContactMessage = async (req, res, next) => {
       data: newContact,
     });
   } catch (error) {
-    console.error('Nodemailer / Contact submission error:', error);
+    console.error('Contact submission error:', error);
     next(error);
   }
 };
