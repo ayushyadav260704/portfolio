@@ -1,11 +1,18 @@
 import { useState, useEffect } from 'react';
-import { Code2, ExternalLink, Award, CheckCircle2, Flame } from 'lucide-react';
+import { Code2, ExternalLink, Award, Loader2 } from 'lucide-react';
 import './LeetCode.css';
 
-// Replace with your LeetCode username
 const LEETCODE_USERNAME = 'puhaniya_';
+const RAW_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000/api';
+const API_BASE_URL = RAW_URL.replace(/\/+$/, '');
 
-// Curated list of key problems you want to highlight on your CV
+const FALLBACK_STATS = {
+  totalSolved: 160,
+  easySolved: 108,
+  mediumSolved: 48,
+  hardSolved: 4,
+};
+
 const FEATURED_PROBLEMS = [
   {
     title: 'Trapping Rain Water',
@@ -38,20 +45,38 @@ const FEATURED_PROBLEMS = [
 ];
 
 export default function LeetCodeSection() {
-  const [stats, setStats] = useState(null);
+  const [stats, setStats] = useState(FALLBACK_STATS);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Fetches live public stats from the open-source LeetCode stats API
-    fetch(`https://leetcode-stats-api.herokuapp.com/${LEETCODE_USERNAME}`)
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.status === 'success') {
-          setStats(data);
+    let isMounted = true;
+
+    async function fetchStats() {
+      try {
+        setLoading(true);
+        // Request through your Express backend proxy
+        const res = await fetch(`${API_BASE_URL}/leetcode/${LEETCODE_USERNAME}`);
+        
+        if (!res.ok) {
+          throw new Error(`Server returned status ${res.status}`);
         }
-      })
-      .catch((err) => console.error('Error fetching LeetCode stats:', err))
-      .finally(() => setLoading(false));
+
+        const json = await res.json();
+        if (json.success && json.data && isMounted) {
+          setStats(json.data);
+        }
+      } catch (err) {
+        console.warn('Fallback stats rendered. Backend fetch notice:', err.message);
+      } finally {
+        if (isMounted) setLoading(false);
+      }
+    }
+
+    fetchStats();
+
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
   return (
@@ -74,7 +99,7 @@ export default function LeetCodeSection() {
             <div>
               <p className="stat-label">Total Solved</p>
               <h3 className="stat-number">
-                {loading ? '...' : stats?.totalSolved || '160+'}
+                {loading ? <Loader2 size={22} className="spinner" /> : stats.totalSolved}
               </h3>
             </div>
           </div>
@@ -82,7 +107,7 @@ export default function LeetCodeSection() {
           <div className="stat-card easy-card">
             <p className="stat-label">Easy</p>
             <h3 className="stat-number text-easy">
-              {loading ? '...' : stats?.easySolved || '108'}
+              {loading ? <Loader2 size={22} className="spinner" /> : stats.easySolved}
             </h3>
             <span className="stat-sub">Fundamentals</span>
           </div>
@@ -90,7 +115,7 @@ export default function LeetCodeSection() {
           <div className="stat-card medium-card">
             <p className="stat-label">Medium</p>
             <h3 className="stat-number text-medium">
-              {loading ? '...' : stats?.mediumSolved || '45'}
+              {loading ? <Loader2 size={22} className="spinner" /> : stats.mediumSolved}
             </h3>
             <span className="stat-sub">Core Interview Level</span>
           </div>
@@ -98,7 +123,7 @@ export default function LeetCodeSection() {
           <div className="stat-card hard-card">
             <p className="stat-label">Hard</p>
             <h3 className="stat-number text-hard">
-              {loading ? '...' : stats?.hardSolved || '4'}
+              {loading ? <Loader2 size={22} className="spinner" /> : stats.hardSolved}
             </h3>
             <span className="stat-sub">Complex Optimization</span>
           </div>
@@ -130,7 +155,7 @@ export default function LeetCodeSection() {
           ))}
         </div>
 
-        {/* LeetCode Profile CTA */}
+        {/* Profile CTA */}
         <div className="profile-cta">
           <a
             href={`https://leetcode.com/u/${LEETCODE_USERNAME}/`}
