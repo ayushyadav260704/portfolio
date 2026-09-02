@@ -36,7 +36,7 @@ export default function Hero() {
           {/* Secondary CTA - Direct Resume Download / View */}
           {/* Option A: Drop your resume in client/public/resume.pdf */}
           <a
-            href="https://drive.google.com/file/d/1Z5FQ4Cr3Vc2fRGdjltiwrfwplR20qAJ3/view?usp=sharing"
+            href="https://drive.google.com/file/d/13MYNuvh0JnD3aVGYK1Ov0bARWIpViul5/view?usp=sharing"
             target="_blank"
             rel="noopener noreferrer"
             className="btn btn-secondary"
